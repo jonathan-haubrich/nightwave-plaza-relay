@@ -20,21 +20,20 @@ ffmpeg -loglevel quiet -i "https://radio.plaza.one/mp3" \
 
 ffmpeg_pid=$!
 
-# Give ffmpeg time to populate files
-sleep 10
-
 echo '#EXTM3U' > playlist.m3u8
 
 pwd && ls -la
 
-for QUALITY in ${STREAM_QUALITIES}
+REVERSED=`tac <( echo ${STREAM_QUALITIES} | tr ' ' '\n') | tr '\n' ' '`
+echo "REVERSED: ${REVERSED}"
+
+for QUALITY in ${REVERSED}
 do
   echo "Checking for ${QUALITY}k.m3u8"
-  if [ -s ${QUALITY}k.m3u8 ]
-  then
-    echo "Echoing stream info"
-    echo -e "#EXT-X-STREAM-INF:BANDWITH=${QUALITY}000\n${QUALITY}k.m3u8" >> playlist.m3u8
-  fi
+  while [ -s ${QUALITY}k.m3u8 ]; do echo -n '.'; sleep 1; done
+  echo
+  echo "Echoing stream info"
+  echo -e "#EXT-X-STREAM-INF:BANDWITH=${QUALITY}000\n${QUALITY}k.m3u8" >> playlist.m3u8
 done
 
 service nginx start

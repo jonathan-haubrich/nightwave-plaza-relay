@@ -5,5 +5,8 @@ services:
     build: .
     ports:
       - "80:80"
+      - "443:443"
     tmpfs:
       - /mnt/streamfs
+    volumes:
+      - ./certs:/etc/nginx/ssl  # Mount the directory containing SSL certificates
