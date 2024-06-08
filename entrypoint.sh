@@ -24,18 +24,13 @@ ffmpeg_pid=$!
 
 echo '#EXTM3U' > playlist.m3u8
 
-pwd && ls -la
-
-REVERSED=`tac <( echo ${STREAM_QUALITIES} | tr ' ' '\n') | tr '\n' ' '`
-echo "REVERSED: ${REVERSED}"
-
-for QUALITY in ${REVERSED}
+for QUALITY in ${STREAM_QUALITIES}
 do
   echo "Checking for ${QUALITY}k.m3u8"
   while [ -s ${QUALITY}k.m3u8 ]; do echo -n '.'; sleep 1; done
   echo
   echo "Echoing stream info"
-  echo -e "#EXT-X-STREAM-INF:BANDWITH=${QUALITY}000\n${QUALITY}k.m3u8" >> playlist.m3u8
+  echo -e "#EXT-X-STREAM-INF:BANDWIDTH=${QUALITY}000,CODECS=\"mp4a.40.2\"\n${QUALITY}k.m3u8" >> playlist.m3u8
 done
 
 service nginx start
